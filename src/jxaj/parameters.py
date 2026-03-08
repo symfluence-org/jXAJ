@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2024-2026 SYMFLUENCE Team <dev@symfluence.org>
 
 """
@@ -208,7 +208,7 @@ def split_params(params_dict: Dict[str, float]) -> Tuple[Dict[str, float], Dict[
     Returns:
         Tuple of (xaj_dict, snow17_dict)
     """
-    from symfluence.models.snow17.parameters import SNOW17_DEFAULTS, SNOW17_PARAM_NAMES
+    from jsnow17.parameters import SNOW17_DEFAULTS, SNOW17_PARAM_NAMES
 
     snow17_dict = {}
     xaj_dict = {}
@@ -233,13 +233,13 @@ def split_params(params_dict: Dict[str, float]) -> Tuple[Dict[str, float], Dict[
 
 def get_combined_param_names() -> List[str]:
     """Get combined XAJ + Snow-17 parameter names."""
-    from symfluence.models.snow17.parameters import SNOW17_PARAM_NAMES
+    from jsnow17.parameters import SNOW17_PARAM_NAMES
     return PARAM_NAMES + SNOW17_PARAM_NAMES
 
 
 def get_combined_defaults() -> Dict[str, float]:
     """Get combined default parameters for XAJ + Snow-17."""
-    from symfluence.models.snow17.parameters import SNOW17_DEFAULTS
+    from jsnow17.parameters import SNOW17_DEFAULTS
     combined = DEFAULT_PARAMS.copy()
     combined.update(SNOW17_DEFAULTS)
     return combined

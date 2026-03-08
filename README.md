@@ -12,3 +12,7 @@ pip install -e .
 
 Once installed, jXAJ registers automatically with symfluence via the
 `symfluence.plugins` entry-point group. No manual registration needed.
+
+## License
+
+Apache-2.0

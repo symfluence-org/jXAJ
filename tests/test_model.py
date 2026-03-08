@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from symfluence.models.snow17.parameters import SNOW17_DEFAULTS
+from jsnow17.parameters import SNOW17_DEFAULTS
 from jxaj.model import (
     HAS_JAX,
     XinanjiangState,

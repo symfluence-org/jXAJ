@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2024-2026 SYMFLUENCE Team <dev@symfluence.org>
 
 """
@@ -47,7 +47,7 @@ class XinanjiangParameterManager(BaseParameterManager):
         # Add Snow-17 parameters when snow module enabled
         self.snow_module = str(config.get('XINANJIANG_SNOW_MODULE', 'none'))
         if self.snow_module == 'snow17':
-            from symfluence.models.snow17.parameters import SNOW17_DEFAULTS, SNOW17_PARAM_BOUNDS
+            from jsnow17.parameters import SNOW17_DEFAULTS, SNOW17_PARAM_BOUNDS
             self.all_bounds.update(SNOW17_PARAM_BOUNDS)
             self.defaults.update(SNOW17_DEFAULTS)
             self.xinanjiang_params = self.xinanjiang_params + list(SNOW17_PARAM_BOUNDS.keys())

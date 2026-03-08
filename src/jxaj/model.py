@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2024-2026 SYMFLUENCE Team <dev@symfluence.org>
 
 """
@@ -783,14 +783,14 @@ def simulate_coupled_jax(
     Returns:
         Tuple of (runoff_timeseries, final_xaj_state)
     """
-    from symfluence.models.snow17.model import snow17_step as s17_step
-    from symfluence.models.snow17.parameters import (
+    from jsnow17.model import snow17_step as s17_step
+    from jsnow17.parameters import (
         DEFAULT_ADC,
     )
-    from symfluence.models.snow17.parameters import (
+    from jsnow17.parameters import (
         create_initial_state as s17_init,
     )
-    from symfluence.models.snow17.parameters import (
+    from jsnow17.parameters import (
         params_dict_to_namedtuple as s17_params_to_nt,
     )
 
@@ -864,14 +864,14 @@ def simulate_coupled_numpy(
     Returns:
         Tuple of (runoff_timeseries, final_xaj_state)
     """
-    from symfluence.models.snow17.model import snow17_step as s17_step
-    from symfluence.models.snow17.parameters import (
+    from jsnow17.model import snow17_step as s17_step
+    from jsnow17.parameters import (
         DEFAULT_ADC,
     )
-    from symfluence.models.snow17.parameters import (
+    from jsnow17.parameters import (
         create_initial_state as s17_init,
     )
-    from symfluence.models.snow17.parameters import (
+    from jsnow17.parameters import (
         params_dict_to_namedtuple as s17_params_to_nt,
     )
 
