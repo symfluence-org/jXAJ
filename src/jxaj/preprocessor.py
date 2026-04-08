@@ -95,7 +95,8 @@ class XinanjiangPreProcessor(BaseModelPreProcessor, SpatialModeDetectionMixin): 
 
         # Extract precipitation
         precip = None
-        for var in ['pr', 'precip', 'pptrate', 'prcp', 'precipitation', 'precipitation_flux']:
+        for var in ['pr', 'precip', 'pptrate', 'prcp', 'precipitation',
+                    'precipitation_flux', 'precipitation_rate']:
             if var in ds:
                 precip = ds[var].values
                 precip_units = ds[var].attrs.get('units', '')
