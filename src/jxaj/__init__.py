@@ -26,7 +26,7 @@ _LAZY_IMPORTS = {
     # Main components
     'XinanjiangPreProcessor': ('.preprocessor', 'XinanjiangPreProcessor'),
     'XinanjiangRunner': ('.runner', 'XinanjiangRunner'),
-    'XinanjiangPostprocessor': ('.postprocessor', 'XinanjiangPostprocessor'),
+    'XinanjiangPostProcessor': ('.postprocessor', 'XinanjiangPostProcessor'),
     'XinanjiangResultExtractor': ('.extractor', 'XinanjiangResultExtractor'),
 
     # Parameters
@@ -91,7 +91,7 @@ def register() -> None:
     from .config import XinanjiangConfigAdapter
     from .extractor import XinanjiangResultExtractor
     from .forcing_adapter import XinanjiangForcingAdapter
-    from .postprocessor import XinanjiangPostprocessor
+    from .postprocessor import XinanjiangPostProcessor
     from .preprocessor import XinanjiangPreProcessor
     from .runner import XinanjiangRunner
 
@@ -100,7 +100,7 @@ def register() -> None:
         preprocessor=XinanjiangPreProcessor,
         runner=XinanjiangRunner,
         runner_method='run_xinanjiang',
-        postprocessor=XinanjiangPostprocessor,
+        postprocessor=XinanjiangPostProcessor,
         config_adapter=XinanjiangConfigAdapter,
         result_extractor=XinanjiangResultExtractor,
         forcing_adapter=XinanjiangForcingAdapter,
@@ -124,14 +124,14 @@ if TYPE_CHECKING:
         XinanjiangParams,
         XinanjiangState,
     )
-    from .postprocessor import XinanjiangPostprocessor
+    from .postprocessor import XinanjiangPostProcessor
     from .preprocessor import XinanjiangPreProcessor
     from .runner import XinanjiangRunner
 
 
 __all__ = [
     'XinanjiangConfig', 'XinanjiangConfigAdapter',
-    'XinanjiangPreProcessor', 'XinanjiangRunner', 'XinanjiangPostprocessor', 'XinanjiangResultExtractor',
+    'XinanjiangPreProcessor', 'XinanjiangRunner', 'XinanjiangPostProcessor', 'XinanjiangResultExtractor',
     'XinanjiangForcingAdapter',
     'PARAM_BOUNDS', 'DEFAULT_PARAMS', 'PARAM_NAMES', 'XinanjiangParams', 'XinanjiangState',
     'simulate', 'simulate_jax', 'simulate_numpy', 'HAS_JAX',

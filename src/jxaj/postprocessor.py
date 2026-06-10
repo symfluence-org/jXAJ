@@ -4,13 +4,13 @@
 """
 Xinanjiang Model Postprocessor.
 
-Uses StandardModelPostprocessor for minimal boilerplate.
+Uses StandardModelPostProcessor for minimal boilerplate.
 """
 
-from symfluence.models.base.standard_postprocessor import StandardModelPostprocessor
+from symfluence.models.base.standard_postprocessor import StandardModelPostProcessor
 
 
-class XinanjiangPostprocessor(StandardModelPostprocessor):
+class XinanjiangPostProcessor(StandardModelPostProcessor):
     """Postprocessor for Xinanjiang model output."""
 
     model_name = "XINANJIANG"
