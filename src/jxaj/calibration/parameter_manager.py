@@ -44,8 +44,18 @@ class XinanjiangParameterManager(BaseParameterManager):
         self.all_bounds = PARAM_BOUNDS.copy()
         self.defaults = DEFAULT_PARAMS.copy()
 
-        # Add Snow-17 parameters when snow module enabled
-        self.snow_module = str(config.get('XINANJIANG_SNOW_MODULE', 'none'))
+        # Add Snow-17 parameters when snow module enabled.
+        # Mirror the jxaj runner's resolution (typed config path + flat-key
+        # fallback) so the calibration parameter set matches what is actually
+        # run; plain config.get('XINANJIANG_SNOW_MODULE') misses the typed
+        # model.xinanjiang.snow_module that SYMFLUENCE emits as 'SNOW_MODULE'.
+        self.snow_module = str(self._get_config_value(
+            lambda: self.config.model.xinanjiang.snow_module
+            if self.config.model and hasattr(self.config.model, 'xinanjiang') and self.config.model.xinanjiang
+            else None,
+            default='none',
+            dict_key='XINANJIANG_SNOW_MODULE',
+        ))
         if self.snow_module == 'snow17':
             from jsnow17.parameters import SNOW17_DEFAULTS, SNOW17_PARAM_BOUNDS
             self.all_bounds.update(SNOW17_PARAM_BOUNDS)
