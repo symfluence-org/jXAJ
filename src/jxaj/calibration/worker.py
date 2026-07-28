@@ -282,10 +282,15 @@ class XinanjiangWorker(InMemoryModelWorker):
             pet = jnp.array(self._forcing['pet'])
             obs = jnp.array(self._observations)
 
+            cal_slice = self.get_calibration_slice()
             if metric.upper() == 'KGE':
-                grad_fn = get_kge_gradient_fn(precip, pet, obs, warmup_days=self.warmup_days)
+                grad_fn = get_kge_gradient_fn(precip, pet, obs,
+                                              warmup_days=self.warmup_days,
+                                              cal_slice=cal_slice)
             else:
-                grad_fn = get_nse_gradient_fn(precip, pet, obs, warmup_days=self.warmup_days)
+                grad_fn = get_nse_gradient_fn(precip, pet, obs,
+                                              warmup_days=self.warmup_days,
+                                              cal_slice=cal_slice)
 
             if grad_fn is None:
                 return None
@@ -358,6 +363,7 @@ class XinanjiangWorker(InMemoryModelWorker):
 
                 latitude = self.latitude
                 si = self.si
+                cal_slice = self.get_calibration_slice()
 
                 def loss_fn(params_array, param_names):
                     params_dict = dict(zip(param_names, params_array))
@@ -366,15 +372,19 @@ class XinanjiangWorker(InMemoryModelWorker):
                             params_dict, precip, temp, pet, obs, doy,
                             warmup_days=self.warmup_days,
                             latitude=latitude, si=si, use_jax=True,
+                            cal_slice=cal_slice,
                         )
                     return kge_loss_coupled(
                         params_dict, precip, temp, pet, obs, doy,
                         warmup_days=self.warmup_days,
                         latitude=latitude, si=si, use_jax=True,
+                        cal_slice=cal_slice,
                     )
             else:
                 # Standard XAJ path (no snow coupling)
                 from jxaj.losses import kge_loss, nse_loss
+
+                cal_slice = self.get_calibration_slice()
 
                 def loss_fn(params_array, param_names):
                     params_dict = dict(zip(param_names, params_array))
@@ -382,10 +392,12 @@ class XinanjiangWorker(InMemoryModelWorker):
                         return nse_loss(
                             params_dict, precip, pet, obs,
                             warmup_days=self.warmup_days, use_jax=True,
+                            cal_slice=cal_slice,
                         )
                     return kge_loss(
                         params_dict, precip, pet, obs,
                         warmup_days=self.warmup_days, use_jax=True,
+                        cal_slice=cal_slice,
                     )
 
             value_and_grad_fn = jax.value_and_grad(loss_fn)

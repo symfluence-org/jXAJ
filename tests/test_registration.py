@@ -29,12 +29,12 @@ class TestPluginRegistration:
     def test_register_populates_postprocessors(self):
         """register() should add XINANJIANG to R.postprocessors."""
         from jxaj import register
-        from jxaj.postprocessor import XinanjiangPostprocessor
+        from jxaj.postprocessor import XinanjiangPostProcessor
         from symfluence.core.registries import Registries as R
 
         register()
         assert 'XINANJIANG' in R.postprocessors
-        assert R.postprocessors['XINANJIANG'] is XinanjiangPostprocessor
+        assert R.postprocessors['XINANJIANG'] is XinanjiangPostProcessor
 
     def test_register_populates_config_adapters(self):
         """register() should add XINANJIANG to R.config_adapters."""
