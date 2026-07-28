@@ -27,6 +27,54 @@ from symfluence.optimization.workers.base_worker import WorkerTask
 from symfluence.optimization.workers.inmemory_worker import InMemoryModelWorker
 
 
+def _calibration_slice(worker):
+    """Calibration-period slice, tolerating symfluence releases without it.
+
+    ``InMemoryModelWorker.get_calibration_slice()`` is the shared
+    implementation and is used whenever it is available. Releases at or
+    below symfluence 0.9.2 predate it, and this package must not quietly
+    fall back to scoring the whole post-warmup record there — losing the
+    calibration window is exactly the bug this guards against.
+
+    Args:
+        worker: The in-memory worker whose config and time index to read.
+
+    Returns:
+        ``(start, end)`` within the post-warmup arrays, or None when no
+        calibration period is configured or it does not overlap the record.
+    """
+    shared = getattr(worker, "get_calibration_slice", None)
+    if callable(shared):
+        return shared()
+
+    cal_period = worker._cfg(
+        "CALIBRATION_PERIOD", worker._cfg("EXPERIMENT_CALIBRATION_PERIOD", "")
+    )
+    if not cal_period or getattr(worker, "_time_index", None) is None:
+        return None
+    try:
+        dates = [d.strip() for d in str(cal_period).split(",")]
+        if len(dates) < 2:
+            return None
+        start_date = pd.Timestamp(dates[0])
+        end_date = pd.Timestamp(dates[1])
+
+        steps_fn = getattr(worker, "warmup_steps", None)
+        steps = steps_fn() if callable(steps_fn) else worker.warmup_days
+
+        after_warmup = worker._time_index[steps:]
+        if not isinstance(after_warmup, pd.DatetimeIndex):
+            after_warmup = pd.DatetimeIndex(after_warmup)
+
+        mask = (after_warmup >= start_date) & (after_warmup <= end_date)
+        hits = np.where(mask)[0]
+        if len(hits) == 0:
+            return None
+        return int(hits[0]), int(hits[-1] + 1)
+    except (ValueError, TypeError):
+        return None
+
+
 class XinanjiangWorker(InMemoryModelWorker):
     """Worker for Xinanjiang model calibration.
 
@@ -282,7 +330,7 @@ class XinanjiangWorker(InMemoryModelWorker):
             pet = jnp.array(self._forcing['pet'])
             obs = jnp.array(self._observations)
 
-            cal_slice = self.get_calibration_slice()
+            cal_slice = _calibration_slice(self)
             if metric.upper() == 'KGE':
                 grad_fn = get_kge_gradient_fn(precip, pet, obs,
                                               warmup_days=self.warmup_days,
@@ -363,7 +411,7 @@ class XinanjiangWorker(InMemoryModelWorker):
 
                 latitude = self.latitude
                 si = self.si
-                cal_slice = self.get_calibration_slice()
+                cal_slice = _calibration_slice(self)
 
                 def loss_fn(params_array, param_names):
                     params_dict = dict(zip(param_names, params_array))
@@ -384,7 +432,7 @@ class XinanjiangWorker(InMemoryModelWorker):
                 # Standard XAJ path (no snow coupling)
                 from jxaj.losses import kge_loss, nse_loss
 
-                cal_slice = self.get_calibration_slice()
+                cal_slice = _calibration_slice(self)
 
                 def loss_fn(params_array, param_names):
                     params_dict = dict(zip(param_names, params_array))
