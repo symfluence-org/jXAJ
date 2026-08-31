@@ -20,7 +20,6 @@ from jxaj.parameters import (
     enforce_ki_kg_constraint,
 )
 from symfluence.optimization.core.base_parameter_manager import BaseParameterManager
-from symfluence.optimization.core.parameter_bounds_registry import get_snow17_bounds, get_xinanjiang_bounds
 
 
 class XinanjiangParameterManager(BaseParameterManager):
@@ -71,9 +70,34 @@ class XinanjiangParameterManager(BaseParameterManager):
         return self.xinanjiang_params
 
     def _load_parameter_bounds(self) -> Dict[str, Dict[str, float]]:
-        bounds = get_xinanjiang_bounds()
+        """Return Xinanjiang parameter bounds, owned by this package.
+
+        Was ``get_xinanjiang_bounds()`` from symfluence's shared catalogue.
+        Xinanjiang predates the ``register_model_bounds`` seam, so its bounds
+        lived in the framework and could not be changed without a framework
+        release. They now come from ``jxaj.parameters.PARAM_BOUNDS`` with the
+        log transform from ``LOG_TRANSFORM_PARAMS`` -- the values this package
+        already uses everywhere else, verified identical to what the catalogue
+        served (13 names, zero differences, same log/linear split).
+
+        The Snow-17 half is likewise taken from ``jsnow17``, which owns those
+        parameters and is already the source for ``self.all_bounds`` above, so
+        both paths agree on the coupled parameter set.
+        """
+        bounds = {
+            name: {
+                'min': float(lo),
+                'max': float(hi),
+                'transform': 'log' if name in LOG_TRANSFORM_PARAMS else 'linear',
+            }
+            for name, (lo, hi) in PARAM_BOUNDS.items()
+        }
         if self.snow_module == 'snow17':
-            bounds.update(get_snow17_bounds())
+            from jsnow17.parameters import SNOW17_PARAM_BOUNDS
+            bounds.update({
+                name: {'min': float(lo), 'max': float(hi), 'transform': 'linear'}
+                for name, (lo, hi) in SNOW17_PARAM_BOUNDS.items()
+            })
         return bounds
 
     def update_model_files(self, params: Dict[str, float]) -> bool:

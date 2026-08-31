@@ -109,6 +109,41 @@ def register() -> None:
         parameter_manager=XinanjiangParameterManager,
     )
 
+    # Contribute Xinanjiang's calibration bounds to symfluence's catalogue.
+    #
+    # Xinanjiang predates the register_model_bounds seam, so symfluence carried
+    # a get_xinanjiang_bounds() entry as a compatibility shim -- meaning a
+    # change to Xinanjiang's bounds needed a FRAMEWORK release. Registering
+    # here makes this package the owner: get_model_bounds('XINANJIANG')
+    # resolves what we register, ahead of the built-in entry, so this works
+    # against current symfluence and lets a later release drop the compat
+    # entry entirely.
+    #
+    # Values come from jxaj.parameters.PARAM_BOUNDS with the log transform from
+    # LOG_TRANSFORM_PARAMS, already the single source for every other bounds
+    # consumer in this package, and verified identical to what the framework
+    # served (13 names, zero differences, same log/linear split) -- so adopting
+    # the seam changes no calibration result. Snow-17 coupling parameters are
+    # owned by jsnow17 and stay out of this registration, matching the
+    # catalogue's Xinanjiang entry.
+    from symfluence.core.calibration.parameters import ParameterInfo, register_model_bounds
+
+    from .parameters import LOG_TRANSFORM_PARAMS, PARAM_BOUNDS
+
+    register_model_bounds(
+        "XINANJIANG",
+        params={
+            name: ParameterInfo(
+                float(lo),
+                float(hi),
+                description=f"Xinanjiang {name}",
+                transform='log' if name in LOG_TRANSFORM_PARAMS else 'linear',
+            )
+            for name, (lo, hi) in PARAM_BOUNDS.items()
+        },
+        names=list(PARAM_BOUNDS),
+    )
+
 
 if TYPE_CHECKING:
     from .calibration import XinanjiangModelOptimizer, XinanjiangParameterManager, XinanjiangWorker
