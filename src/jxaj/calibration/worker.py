@@ -23,8 +23,8 @@ import pandas as pd
 
 from symfluence.core.constants import ModelDefaults
 from symfluence.core.mixins.project import resolve_data_subdir
-from symfluence.optimization.workers.base_worker import WorkerTask
-from symfluence.optimization.workers.inmemory_worker import InMemoryModelWorker
+
+from .._symfluence_compat import InMemoryModelWorker, WorkerTask
 
 
 def _calibration_slice(worker):

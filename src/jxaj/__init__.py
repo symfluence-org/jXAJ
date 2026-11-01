@@ -82,32 +82,28 @@ def register() -> None:
     Called automatically via the ``symfluence.plugins`` entry-point group.
     Must NOT be called at import time — only when the entry-point loader
     invokes it.
+
+    Only the config adapter is imported here: it is light, and model_manifest
+    derives the config schema from it. Every other component is registered by
+    dotted path and imported on first lookup, so plugin discovery during
+    ``import symfluence`` does not load the calibration stack or JAX.
     """
+    from symfluence.core.registries import R
     from symfluence.core.registry import model_manifest
 
-    from .calibration.optimizer import XinanjiangModelOptimizer
-    from .calibration.parameter_manager import XinanjiangParameterManager
-    from .calibration.worker import XinanjiangWorker
     from .config import XinanjiangConfigAdapter
-    from .extractor import XinanjiangResultExtractor
-    from .forcing_adapter import XinanjiangForcingAdapter
-    from .postprocessor import XinanjiangPostProcessor
-    from .preprocessor import XinanjiangPreProcessor
-    from .runner import XinanjiangRunner
 
-    model_manifest(
-        "XINANJIANG",
-        preprocessor=XinanjiangPreProcessor,
-        runner=XinanjiangRunner,
-        runner_method='run_xinanjiang',
-        postprocessor=XinanjiangPostProcessor,
-        config_adapter=XinanjiangConfigAdapter,
-        result_extractor=XinanjiangResultExtractor,
-        forcing_adapter=XinanjiangForcingAdapter,
-        optimizer=XinanjiangModelOptimizer,
-        worker=XinanjiangWorker,
-        parameter_manager=XinanjiangParameterManager,
-    )
+    model_manifest("XINANJIANG", config_adapter=XinanjiangConfigAdapter)
+
+    pkg = __name__
+    R.preprocessors.add_lazy("XINANJIANG", f"{pkg}.preprocessor.XinanjiangPreProcessor")
+    R.runners.add_lazy("XINANJIANG", f"{pkg}.runner.XinanjiangRunner", runner_method='run_xinanjiang')
+    R.postprocessors.add_lazy("XINANJIANG", f"{pkg}.postprocessor.XinanjiangPostProcessor")
+    R.result_extractors.add_lazy("XINANJIANG", f"{pkg}.extractor.XinanjiangResultExtractor")
+    R.forcing_adapters.add_lazy("XINANJIANG", f"{pkg}.forcing_adapter.XinanjiangForcingAdapter")
+    R.optimizers.add_lazy("XINANJIANG", f"{pkg}.calibration.optimizer.XinanjiangModelOptimizer")
+    R.workers.add_lazy("XINANJIANG", f"{pkg}.calibration.worker.XinanjiangWorker")
+    R.parameter_managers.add_lazy("XINANJIANG", f"{pkg}.calibration.parameter_manager.XinanjiangParameterManager")
 
 
 if TYPE_CHECKING:
