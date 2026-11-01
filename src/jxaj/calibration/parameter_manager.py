@@ -19,8 +19,7 @@ from jxaj.parameters import (
     PARAM_BOUNDS,
     enforce_ki_kg_constraint,
 )
-from symfluence.optimization.core.base_parameter_manager import BaseParameterManager
-from symfluence.optimization.core.parameter_bounds_registry import get_snow17_bounds, get_xinanjiang_bounds
+from .._symfluence_compat import BaseParameterManager, get_snow17_bounds, get_xinanjiang_bounds
 
 
 class XinanjiangParameterManager(BaseParameterManager):

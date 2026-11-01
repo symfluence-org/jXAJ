@@ -16,9 +16,12 @@ import pandas as pd
 import xarray as xr
 
 from symfluence.core.constants import UnitDetectionThresholds
-from symfluence.data.utils.netcdf_utils import create_netcdf_encoding
-from symfluence.models.base import BaseModelPreProcessor
-from symfluence.models.mixins import SpatialModeDetectionMixin
+
+from ._symfluence_compat import (
+    BaseModelPreProcessor,
+    SpatialModeDetectionMixin,
+    create_netcdf_encoding,
+)
 
 
 class XinanjiangPreProcessor(BaseModelPreProcessor, SpatialModeDetectionMixin):  # type: ignore[misc]
@@ -70,7 +73,7 @@ class XinanjiangPreProcessor(BaseModelPreProcessor, SpatialModeDetectionMixin): 
         """Prepare forcing data for lumped Xinanjiang simulation."""
         self.logger.info("Preparing lumped forcing data for Xinanjiang")
 
-        from symfluence.models.utilities import ForcingDataProcessor
+        from ._symfluence_compat import ForcingDataProcessor
 
         fdp = ForcingDataProcessor(self.config, self.logger)
 
@@ -251,7 +254,7 @@ class XinanjiangPreProcessor(BaseModelPreProcessor, SpatialModeDetectionMixin): 
 
     def _calculate_hamon_pet(self, temp: np.ndarray, time_values) -> np.ndarray:
         """Calculate PET using Hamon method (mm/day)."""
-        from symfluence.models.mixins.pet_calculator import PETCalculatorMixin
+        from ._symfluence_compat import PETCalculatorMixin
 
         self.logger.info("Calculating PET using Hamon method")
         dates = pd.to_datetime(time_values)

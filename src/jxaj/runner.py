@@ -16,11 +16,15 @@ import pandas as pd
 import xarray as xr
 
 from symfluence.core.exceptions import ModelExecutionError, symfluence_error_handler
-from symfluence.data.utils.netcdf_utils import create_netcdf_encoding
-from symfluence.geospatial.geometry_utils import calculate_catchment_area_km2
-from symfluence.models.base import BaseModelRunner
-from symfluence.models.execution import SpatialOrchestrator
-from symfluence.models.mixins import ObservationLoaderMixin, SpatialModeDetectionMixin
+
+from ._symfluence_compat import (
+    BaseModelRunner,
+    ObservationLoaderMixin,
+    SpatialModeDetectionMixin,
+    SpatialOrchestrator,
+    calculate_catchment_area_km2,
+    create_netcdf_encoding,
+)
 
 
 class XinanjiangRunner(  # type: ignore[misc]
@@ -297,7 +301,7 @@ class XinanjiangRunner(  # type: ignore[misc]
     def _calculate_and_log_metrics(self) -> None:
         """Calculate and log performance metrics."""
         try:
-            from symfluence.evaluation.metrics import kge, nse
+            from ._symfluence_compat import kge, nse
 
             output_file = self.output_dir / f"{self.domain_name}_xinanjiang_output.nc"
             if not output_file.exists():
